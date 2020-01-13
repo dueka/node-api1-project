@@ -1,20 +1,12 @@
-// install express and cors (npm packages)
-// STEP 1: flesh out a dummy server
-// STEP 2: flesh out the five endpoints (will use those helpers)
-
-// imports
-const express = require("express"); // commonjs equivalent to "import express from 'express'"
+const express = require("express");
 const cors = require("cors");
 
 const { find, findById, insert, update, remove } = require("./data/db");
 
-// instantiate an express app
 const app = express();
 
-// plug extra functionality to our app
-// we need to be able to read req.body
 app.use(express.json());
-// we need to enable CORS so this server works for all origins
+
 app.use(cors());
 
 app.get("/api/users", (req, res) => {
@@ -30,26 +22,24 @@ app.get("/api/users", (req, res) => {
     });
 });
 
-// app.get("/hubs/:id", (req, res) => {
-//   // GET a hub by its id, which is a parameter of the path
-//   const { id } = req.params;
-//   findById(id)
-//     .then(data => {
-//       // two things can happen: id exists or not
-//       // id exists: we just res.json the data
-//       // id does not exist: we just res.json a 404
-//       if (data) {
-//         res.status(200).json(data);
-//       } else {
-//         res.status(404).json({ message: "we can not find that hub" });
-//       }
-//     })
-//     .catch(error => {
-//       // crashes and such
-//       // res.json the error message and stack
-//       console.log(error);
-//     });
-// });
+app.get("api/users/:id", (req, res) => {
+  const { id } = req.params;
+  findById(id)
+    .then(data => {
+      if (data) {
+        res.status(200).json(data);
+      } else {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist" });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({
+        errorMessage: "The users information could not be retrieved."
+      });
+    });
+});
 
 app.post("/api/users", (req, res) => {
   const newUser = {
