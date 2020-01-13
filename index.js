@@ -25,8 +25,7 @@ app.get("/api/users", (req, res) => {
     })
     .catch(error => {
       res.status(500).json({
-        message: error.message,
-        stack: error.stack
+        errorMessage: "The users information could not be retrieved."
       });
     });
 });
@@ -53,15 +52,25 @@ app.get("/api/users", (req, res) => {
 // });
 
 app.post("/api/users", (req, res) => {
-  // POST a new hub using the request body
-  const newUser = req.body;
+  const newUser = {
+    name: req.body.name,
+    bio: req.body.bio
+  };
 
-  add(newUser)
+  if (!newUser.name || !newUser.bio) {
+    res.status(404).json({
+      message: "Please provide name and bio for the user."
+    });
+  }
+
+  insert(newUser)
     .then(user => {
       res.status(201).json(user);
     })
     .catch(error => {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({
+        errorMessage: "There was an error while saving the user to the database"
+      });
     });
 });
 
