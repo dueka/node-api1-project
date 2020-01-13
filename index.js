@@ -64,55 +64,59 @@ app.post("/api/users", (req, res) => {
     });
 });
 
-// app.delete("/hubs/:id", (req, res) => {
-//   // DELETE a hub by its id
-//   const { id } = req.params;
+app.delete("/api/users/:id", (req, res) => {
+  const { id } = req.params;
 
-//   remove(id)
-//     .then(data => {
-//       if (data) {
-//         res.status(202).json(`Hub with id ${data.id} got deleted`);
-//       } else {
-//         res.status(404).json({
-//           message: `Hub with id ${data.id} does not exist`
-//         });
-//       }
-//     })
-//     .catch(error => {
-//       console.log(error.message);
-//     });
-// });
+  remove(id)
+    .then(data => {
+      if (data) {
+        res.status(202).json(`User with id ${data.id} got deleted`);
+      } else {
+        res.status(404).json({
+          message: `User with id ${data.id} does not exist`
+        });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "The user could not be removed."
+      });
+    });
+});
 
-// app.put("/hubs/:id", async (req, res) => {
-//   // PUT a hub by id using the request body
-//   const { id } = req.params;
-//   const replacementHub = req.body;
+app.put("/hubs/:id", async (req, res) => {
+  const { id } = req.params;
+  const replacementUser = {
+    name: req.body.name,
+    bio: req.body.bio
+  };
 
-//   // REACT
-//   // axios.put('url', { name: 'new name' } )
+  if (!user.name || !user.bio) {
+    res.status(400).json({
+      message: "Please provide name and bio for the user."
+    });
+  }
 
-//   try {
-//     const updatedHub = await update(id, replacementHub);
-//     if (updatedHub) {
-//       res.status(200).json(updatedHub);
-//     } else {
-//       res.status(404).json({ message: `hub with id ${id} is not here` });
-//     }
-//   } catch (error) {
-//     res.status(500).json(error.message);
-//   }
-// });
+  try {
+    const updatedUser = await update(id, replacementUser);
+    if (updatedUser) {
+      res.status(200).json(updatedUser);
+    } else {
+      res.status(404).json({
+        message: `The user with the ${id} does not exist.`
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "The user could not be modified."
+    });
+  }
+});
 
-// write a dummy endpoint
 app.get("/", (req, res) => {
-  // callback takes two args:
-  // req -> object from which we can gather all details about the request
-  // res -> object with useful methods (for example to respond!!)
-  // end() send(ANYTHING) json(JSON)
   res.json("this is the response");
 });
 
-// we need code to spin up the server and just have it listen for incoming
 app.listen(6000, () => {
   console.log("listening on 6000");
 });
